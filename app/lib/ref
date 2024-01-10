@@ -1,0 +1,51 @@
+import 'package:flutter/material.dart';
+import 'user_controller.dart';
+
+class MyPage extends StatefulWidget {
+  @override
+  _MyPageState createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  final UserController _controller = UserController();
+  UserData _userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    try {
+      UserData data = await _controller.fetchUserData();
+      setState(() {
+        _userData = data;
+      });
+    } catch (e) {
+      // 错误处理逻辑
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('User Data'),
+      ),
+      body: _userData == null
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Name: ${_userData.name}'),
+                  Text('Email: ${_userData.email}'),
+                  // 其他用户信息字段...
+                ],
+              ),
+            ),
+    );
+  }
+}

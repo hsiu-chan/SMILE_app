@@ -2,7 +2,7 @@ from flask import Flask, request, Blueprint,jsonify,current_app
 from lib.Base64Converter import url_to_img,path_to_base64
 
 #from lib.SMILE import SMILE
-import uuid
+#import uuid
 import numpy as np
 from ultralytics import YOLO
 import matplotlib.pyplot as plt
@@ -153,10 +153,13 @@ def upload_img():
 
 def add(data):
     #img_src=str(data.get('image'))
-    img,ext=url_to_img(data.get('image'))
-    id=uuid.uuid4()
+
+    img,ext=url_to_img(data['image'])
+    
+    #id=uuid.uuid4()
     #filename = "upload_fig/{}.{}".format(id, ext)
     filename = "{}.{}".format('input', ext)
+    print (filename)
 
     with open(filename, "wb") as f:
         f.write(img)

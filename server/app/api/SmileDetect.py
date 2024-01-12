@@ -161,7 +161,7 @@ def add(data):
     with open(filename, "wb") as f:
         f.write(img)
     
-    nowfig=SMILE(filename, "cuda")
+    nowfig=SMILE(filename, "mps")
     nowfig.find_all_tooth()
     #mask,sc=nowfig.predict([[50,14]])
 

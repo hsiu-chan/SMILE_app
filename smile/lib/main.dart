@@ -10,7 +10,27 @@ import 'package:image/image.dart' as img;
 
 import 'package:smile/controller/smile.dart';
 
+import 'package:smile/get_config.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+
+import 'package:smile/controller/img_tool.dart';
+
+AppConfig globalConfig = AppConfig(apiBaseUrl: '', apiKey: '');
+
+Future<void> loadConfig() async {
+  try {
+    File configFile = File('config.json');
+    String contents = await configFile.readAsString();
+    Map<String, dynamic> configMap = jsonDecode(contents);
+    globalConfig = AppConfig.fromJson(configMap);
+  } catch (e) {
+    print('Error loading config: $e');
+  }
+}
+
 void main() {
+  loadConfig();
   runApp(const MyApp());
 }
 
@@ -49,7 +69,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String base64Image = '';
+  String? img_path;
   Smile smile = Smile.empty();
   dynamic nowState = SizedBox.shrink();
   dynamic resultImage = SizedBox.shrink();
@@ -81,30 +101,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      base64Image = base64Encode(Uint8List.fromList(bytes));
-      smile = Smile(base64Image);
-
-      nowState = Text('請確認');
-      setState(() {});
-    }
+    img_path = await pickAndSaveFile(); //取得圖片路徑
+    smile = Smile(img_path!);
+    setState(() {
+      nowState = Text("請確認");
+      resultImage = null;
+    });
   }
 
   Future<void> _sendImage() async {
     setState(() {
-      nowState = CircularProgressIndicator();
+      // 轉圈圈等待
+      resultImage = Align(
+        alignment: Alignment.center,
+        child: SizedBox(
+            width: 100.0, height: 100.0, child: CircularProgressIndicator()),
+      );
     });
-    await smile.send();
+    await smile.send_multipart();
     setState(() {
       nowState = Text('辨識完成');
-      resultImage = Image.memory(
-        Uint8List.fromList(base64Decode(smile.base64Result)),
-        width: double.infinity,
-      );
+
+      try {
+        resultImage = Image.file(File(smile.result_path!), fit: BoxFit.contain);
+      } catch (error) {
+        resultImage = Text('Error sending image: $error');
+      }
     });
   }
 
@@ -155,16 +177,21 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // 上傳的圖片
-            base64Image.isNotEmpty
-                ? Image.memory(
-                    Uint8List.fromList(base64Decode(base64Image)),
-                    width: double.infinity,
-                  )
-                : const Text(
-                    '選擇照片上傳',
-                  ),
+            Container(
+              height: 400,
+              child: img_path == null
+                  ? const Align(
+                      alignment: Alignment.center, child: Text('選擇照片上傳'))
+                  : Image.file(
+                      File(img_path!),
+                      fit: BoxFit.contain,
+                    ),
+            ),
             SizedBox(height: 50, child: nowState),
-            resultImage,
+            Container(
+              height: 200,
+              child: resultImage,
+            ),
           ],
         ),
       )),

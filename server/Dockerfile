@@ -1,18 +1,30 @@
-# 使用官方的Python映像
-FROM python:3.10
+# 阶段1：构建阶段
+FROM python:3.10 AS builder
 
-# 設定工作目錄
 WORKDIR /app
 
-# 複製 requirements.txt 並安裝相依套件
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /app/requirements.txt
+
+RUN pip install --upgrade pip
+
+RUN pip install -r requirements.txt
+
+
+# 阶段2：运行阶段
+FROM python:3.10
+
+WORKDIR /app
+
 
 # 複製整個應用程式到容器
-COPY . .
+COPY --from=builder . /app
+
+#VOLUME /app/flask
+
 
 # 開放應用程式所需的端口
-EXPOSE 5000
+EXPOSE 8888
+
 
 # 定義啟動應用程式的命令
 CMD ["python", "main.py"]

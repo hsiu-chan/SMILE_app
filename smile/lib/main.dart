@@ -96,7 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _sendImage() async {
     setState(() {
-      nowState = CircularProgressIndicator();
+      nowState = Text('辨識中');
+      resultImage = CircularProgressIndicator();
     });
     await smile.send();
     setState(() {

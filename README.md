@@ -1,3 +1,3 @@
 # SMILE_app
 
-[Demo](/pages/smiledetect)
+![](Docs/screen_shot.png)

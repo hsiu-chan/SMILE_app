@@ -10,7 +10,7 @@ void main() {
       debugShowCheckedModeBanner: false,
       title: 'Your App Title',
       initialBinding: ApplicationBindings(),
-      initialRoute: AppPages.INITIAL,
+      initialRoute: AppPages.initial,
       getPages: AppPages.routes,
     ),
   );

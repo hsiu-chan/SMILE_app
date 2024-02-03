@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -71,9 +70,10 @@ class HomeController extends GetxController {
     }
   }
 
-  final Uri API_ENDPOINT =
-      Uri.parse('http://127.0.0.1:8888/SmileDetect_upload_mt');
   Future<void> upload_img() async {
+    final Uri API_ENDPOINT =
+        Uri.parse('http://127.0.0.1:8888/SmileDetect_upload_mt');
+
     if (isEmpty_img_path()) {
       return;
     }
@@ -109,7 +109,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _checkPermission();
+    //_checkPermission();
   }
 
   @override

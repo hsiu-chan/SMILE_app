@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+//import 'package:smile/app/modules/setting/setting_page.dart';
 
 import 'home_controller.dart';
 
@@ -24,6 +25,10 @@ class HomePage extends GetView<HomeController> {
     }
 
     Future<void> _sendImage() async {
+      if (controller.isEmpty_img_path()) {
+        controller.set_alert('no image selected.');
+        return;
+      }
       controller.set_resultImage(Align(
         alignment: Alignment.center,
         child: SizedBox(
@@ -48,26 +53,7 @@ class HomePage extends GetView<HomeController> {
       ),
       drawer: Drawer(
         child: ListView(
-          children: const <Widget>[
-            SizedBox(
-              height: 70,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple,
-                ),
-                child: Text(
-                  'Drawer Header',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Messages'),
-            ),
+          children: <Widget>[
             ListTile(
               leading: Icon(Icons.account_circle),
               title: Text('Profile'),
@@ -75,6 +61,11 @@ class HomePage extends GetView<HomeController> {
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('Settings'),
+              onTap: () async {
+                await Future.delayed(Duration.zero); // Add this line
+
+                Get.toNamed('/setting');
+              },
             ),
           ],
         ),

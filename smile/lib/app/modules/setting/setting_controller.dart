@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 
 class SettingController extends GetxController {
-  //TODO: Implement SettingController.
+  RxString? _username;
+  String? get username => _username?.value;
+
+  RxDouble _selectedFontSize = 20.0.obs;
+  double get selectedFontSize => _selectedFontSize.value;
 
   @override
   void onInit() {

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import 'app/core/bindings/application_bindings.dart';
 import 'app/routes/app_pages.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(

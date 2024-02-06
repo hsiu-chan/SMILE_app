@@ -7,9 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:smile/config.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController.
   RxString _img_path = ''.obs;
   String get img_path => _img_path.value;
 
@@ -21,6 +21,9 @@ class HomeController extends GetxController {
 
   Rxn<Widget> _resultImage = Rxn<Widget>();
   Widget get resultImage => _resultImage.value ?? SizedBox.shrink();
+
+  RxBool _loading = false.obs;
+  bool get loading => _loading.value;
 
   void set_alert(String? a) {
     _alert.value = a ?? '';
@@ -43,6 +46,10 @@ class HomeController extends GetxController {
     _rt_img_path.value = '';
     _resultImage.value = null;
     update();
+  }
+
+  void set_loading(bool x) {
+    _loading.value = x;
   }
 
   Future<void> pickAndSaveFile() async {
@@ -71,15 +78,17 @@ class HomeController extends GetxController {
   }
 
   Future<void> upload_img() async {
-    final Uri API_ENDPOINT =
-        Uri.parse('http://127.0.0.1:8888/SmileDetect_upload_mt');
+    final Uri API_ENDPOINT = Uri.parse(SMILE_API);
 
     if (isEmpty_img_path()) {
       return;
     }
+
     var request = http.MultipartRequest('POST', API_ENDPOINT);
     var file = await http.MultipartFile.fromPath('file', _img_path.value);
     request.files.add(file);
+
+    set_loading(true);
 
     try {
       var response = await request.send();
@@ -104,6 +113,8 @@ class HomeController extends GetxController {
     } catch (error) {
       set_alert('Error uploading file: $error');
     }
+
+    set_loading(false);
   }
 
   @override
@@ -114,6 +125,7 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
+    print('ready');
     super.onReady();
   }
 

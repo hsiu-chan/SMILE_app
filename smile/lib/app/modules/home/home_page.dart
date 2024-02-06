@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:smile/app/core/widgets/main_frame.dart';
+import 'package:smile/app/modules/login/login_page.dart';
+import 'package:smile/app/modules/result/result_page.dart';
+import 'package:smile/config.dart';
 //import 'package:smile/app/modules/setting/setting_page.dart';
 
 import 'home_controller.dart';
@@ -29,41 +33,45 @@ class HomePage extends GetView<HomeController> {
         controller.set_alert('no image selected.');
         return;
       }
-      controller.set_resultImage(Align(
-        alignment: Alignment.center,
-        child: SizedBox(
-            width: 100.0, height: 100.0, child: CircularProgressIndicator()),
-      ));
+
+      controller.set_alert('uploading to $SMILE_API');
 
       await controller.upload_img();
+      controller.set_alert('辨識完成');
 
-      try {
-        controller.set_resultImage(
-            Image.file(File(controller.rt_img_path), fit: BoxFit.contain));
-        nowState = Text('辨識完成');
-      } catch (error) {
-        controller.set_alert('Error sending image: $error');
-      }
+      Get.to(ResultPage(), arguments: {'img': controller.rt_img_path});
     }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('HomePage'),
-        backgroundColor: Colors.deepPurple,
+        //backgroundColor: Colors.deepPurple,
       ),
       drawer: Drawer(
-        child: ListView(
+        child: Column(
           children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text('Profile'),
+            SizedBox(
+              height: 100,
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
               onTap: () async {
-                await Future.delayed(Duration.zero); // Add this line
-
+                await Future.delayed(Duration.zero);
+                Get.to(LoginPage());
+              },
+              leading: Icon(
+                Icons.account_circle,
+                size: 25,
+              ),
+              title: NormalText('Profile'),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.settings,
+                size: 25,
+              ),
+              title: NormalText('Settings'),
+              onTap: () async {
+                await Future.delayed(Duration.zero);
                 Get.toNamed('/setting');
               },
             ),
@@ -72,50 +80,78 @@ class HomePage extends GetView<HomeController> {
       ),
 
       body: Stack(children: <Widget>[
-        Obx(() => Text(controller.alert)),
-        Center(
-            child: Padding(
-          padding: const EdgeInsets.all(16),
+        MainFrame(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               // 上傳的圖片
-              Container(
-                height: 400,
-                child: Obx(() => controller.isEmpty_img_path()
-                    ? const Align(
-                        alignment: Alignment.center, child: Text('選擇照片上傳'))
-                    : Image.file(
-                        File(controller.img_path!),
-                        fit: BoxFit.contain,
-                      )),
+              GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(0, 0, 0, 0.2),
+                      borderRadius: BorderRadius.circular(20), // 圓角半徑20
+                    ),
+                    height: 400,
+                    child: Obx(() => controller.isEmpty_img_path()
+                        ? const Align(
+                            alignment: Alignment.center, child: Text('選擇照片上傳'))
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(20), // 圓角半徑20
+                            child: Image.file(
+                              File(controller.img_path),
+                              fit: BoxFit.fill,
+                            ))),
+                  )),
+
+              const SizedBox(
+                height: 100,
               ),
-              Container(height: 200, child: Obx(() => controller.resultImage)),
+              TextButton(
+                // 確認
+                style: ButtonStyle(
+                  fixedSize: MaterialStateProperty.all<Size>(
+                    Size(Get.width * 0.8, 85), // 设置宽度和高度
+                  ),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Color.fromRGBO(200, 200, 200, 1)),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                onPressed: _sendImage,
+                child: const Center(
+                    child: Text(
+                  'CHECK!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 30,
+                    fontWeight: FontWeight.normal,
+                  ),
+                )),
+              )
             ],
           ),
-        ))
+        ),
+        Obx(() => controller.loading
+            ? Container(
+                width: Get.width,
+                height: Get.height,
+                color: Color.fromRGBO(0, 0, 0, 0.3),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: const SizedBox(
+                      width: 100.0,
+                      height: 100.0,
+                      child: CircularProgressIndicator()),
+                ),
+              )
+            : SizedBox.shrink()),
+        Obx(() => Text(controller.alert)),
       ]),
 
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          FloatingActionButton(
-            backgroundColor: Colors.red,
-            splashColor: Color.fromARGB(150, 255, 0, 0),
-            onPressed: _pickImage,
-            tooltip: 'PickImage',
-            child: const Icon(Icons.image),
-          ),
-          FloatingActionButton(
-            backgroundColor: Colors.red,
-            splashColor: Color.fromARGB(150, 255, 0, 0),
-            onPressed: _sendImage,
-            tooltip: 'SendImage',
-            child: const Icon(Icons.check),
-          )
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       //按鈕
       //按鈕
     );

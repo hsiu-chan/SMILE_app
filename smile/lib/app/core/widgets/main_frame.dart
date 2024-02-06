@@ -14,7 +14,6 @@ class MainFrame extends StatelessWidget {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(16),
-        color: Color.fromRGBO(255, 255, 255, 1),
         width: Get.width,
         child: child,
       ),
@@ -42,23 +41,23 @@ class NormalText extends StatelessWidget {
 class SettingBox extends StatelessWidget {
   final title;
   final Widget? child;
+  void Function()? onTap;
 
-  SettingBox({this.title, this.child});
+  SettingBox({this.title, this.child, this.onTap});
 
   @override
-  Widget build(BuildContext context) => Container(
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.black, width: 0.75), // 上边框
-          bottom: BorderSide(color: Colors.black, width: 0.75), // 下边框
+  Widget build(BuildContext context) => InkWell(
+      onTap: onTap,
+      child: Container(
+        width: Get.width,
+        color: Color.fromARGB(0, 255, 255, 1),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: NormalText(title),
+            )
+          ],
         ),
-      ),
-      child: Row(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(5),
-            child: NormalText(title),
-          )
-        ],
       ));
 }

@@ -1,14 +1,22 @@
+import 'dart:ffi';
+
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:smile/app/core/helpers/HiveUtil.dart';
 
 class SettingController extends GetxController {
-  RxString? _username;
-  String? get username => _username?.value;
-
   RxDouble _selectedFontSize = 20.0.obs;
   double get selectedFontSize => _selectedFontSize.value;
 
+  late HiveUtil hiveUtil;
+
+  Future<void> logout() async {
+    hiveUtil.userBox.delete('username');
+  }
+
   @override
-  void onInit() {
+  Future<void> onInit() async {
+    hiveUtil = await HiveUtil.getInstance();
     super.onInit();
   }
 
@@ -20,5 +28,11 @@ class SettingController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
   }
 }

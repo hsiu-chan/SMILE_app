@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:smile/app/core/helpers/HiveUtil.dart';

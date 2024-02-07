@@ -17,6 +17,7 @@ class HiveUtil {
 
     /// 注册自定义对象（实体）
     Hive.init(document.path);
+    //Hive.init('userbox');
   }
 
   /// 初始化 Box

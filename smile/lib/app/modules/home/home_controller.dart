@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,6 +8,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+
 import 'package:smile/config.dart';
 
 class HomeController extends GetxController {
@@ -24,6 +28,8 @@ class HomeController extends GetxController {
 
   RxBool _loading = false.obs;
   bool get loading => _loading.value;
+
+  dynamic smile_info;
 
   void set_alert(String? a) {
     _alert.value = a ?? '';
@@ -80,31 +86,82 @@ class HomeController extends GetxController {
   Future<void> upload_img() async {
     final Uri API_ENDPOINT = Uri.parse(SMILE_API);
 
+    // 檢查 img 路徑
     if (isEmpty_img_path()) {
+      print('img_path_isEmpty');
       return;
     }
 
+    // http 請求
     var request = http.MultipartRequest('POST', API_ENDPOINT);
     var file = await http.MultipartFile.fromPath('file', _img_path.value);
-    request.files.add(file);
+    request.files.add(file); // 添加圖片
 
-    set_loading(true);
+    set_loading(true); // 開始轉圈圈
 
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
-        Uint8List _imageBytes = await response.stream.toBytes();
+        var boundary = response.headers['content-type']!
+            .split('boundary=')[1]; // 取得 http body 的分界
 
-        // 获取应用程序的临时目录
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath = tempDir.path;
+        var parts = MimeMultipartTransformer(boundary)
+            .bind(response.stream); //分出每一 part
 
-        // 构建临时文件路径
-        _rt_img_path.value =
-            '$tempPath/${DateTime.now().millisecondsSinceEpoch}.jpeg';
+        await for (var part in parts) {
+          // 解析 contentDisposition
+          var contentDisposition = part.headers['content-disposition'] ?? '';
+          List<String> dispositions = contentDisposition.split(';');
 
-        // 将图像字节写入临时文件
-        await File(rt_img_path).writeAsBytes(_imageBytes);
+          // 取得 multi 的 name=
+          String name = '';
+          for (var disposition in dispositions) {
+            disposition = disposition.trim();
+            if (disposition.startsWith('name=')) {
+              name =
+                  disposition.substring('name='.length + 1).replaceAll('"', '');
+            }
+          }
+
+          // contentType
+          var contentType = part.headers['content-type'] ?? '';
+
+          // 根據 name 處理 multipart
+          switch (name) {
+            // 微笑照片
+            case 'image':
+              // bit  資料
+              var _data = await part.fold<List<int>>(
+                  [], (prev, element) => prev..addAll(element));
+
+              // 取得臨時目錄
+              Directory tempDir = await getTemporaryDirectory();
+              String tempPath = tempDir.path;
+
+              // // 構建圖片路徑
+              String _ext = contentType.split('/')[1];
+              _rt_img_path.value =
+                  '$tempPath/${DateTime.now().millisecondsSinceEpoch}.$_ext';
+
+              // 寫入圖片
+              await File(rt_img_path).writeAsBytes(_data);
+
+            case 'info':
+              assert(contentType.contains('application/json'));
+              // JSON -> string
+              var jsonString = await part.transform(utf8.decoder).join();
+              // 解析JSON
+              smile_info = json.decode(jsonString);
+              print(smile_info);
+
+            case 'error':
+              set_alert(await part.transform(utf8.decoder).join());
+
+            default:
+              set_alert('$name not suppport');
+              print('$name not suppport');
+          }
+        }
 
         set_alert('File uploaded successfully');
       } else {

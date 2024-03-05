@@ -38,8 +38,12 @@ class HomePage extends GetView<HomeController> {
 
       await controller.upload_img();
       controller.set_alert('辨識完成');
+      print('辨識完成');
 
-      Get.to(ResultPage(), arguments: {'img': controller.rt_img_path});
+      Get.to(ResultPage(), arguments: {
+        'img': controller.rt_img_path,
+        'smile_info': controller.smile_info
+      });
     }
 
     return Scaffold(

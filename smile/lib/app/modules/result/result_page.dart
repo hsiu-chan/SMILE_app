@@ -16,7 +16,7 @@ class ResultPage extends GetView<ResultController> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ResultPage'),
+        title: const Text('辨識結果'),
         centerTitle: true,
       ),
       body: MainFrame(
@@ -24,7 +24,7 @@ class ResultPage extends GetView<ResultController> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Text(
-                'ResultPage is working',
+                'Your smile',
                 style: TextStyle(fontSize: 20),
               ),
               Image.file(File(controller.rt_img_path), fit: BoxFit.contain),

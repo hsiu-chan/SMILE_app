@@ -5,7 +5,7 @@ import 'package:smile/app/core/helpers/HiveUtil.dart';
 
 import 'app/core/bindings/application_bindings.dart';
 import 'app/routes/app_pages.dart';
-import 'package:google_fonts/google_fonts.dart';
+//import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); //確認Widgets 初始化

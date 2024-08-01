@@ -53,8 +53,13 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // 啟用代碼混淆
+            minifyEnabled true
+            // 啟用資源縮小
+            shrinkResources true
+            // 使用 ProGuard 配置文件
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // 設定簽名配置
             signingConfig signingConfigs.debug
         }
     }
@@ -64,4 +69,13 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation 'androidx.lifecycle:lifecycle-common:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-core:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.activity:activity-ktx:1.7.2'
+    implementation 'androidx.savedstate:savedstate-ktx:1.2.1'
+}

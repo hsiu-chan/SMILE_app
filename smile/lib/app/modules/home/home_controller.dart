@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,11 +33,25 @@ class HomeController extends GetxController {
   dynamic smile_info;
 
   void set_alert(String? a) {
+    return;
     _alert.value = a ?? '';
     update();
     Future.delayed(Duration(seconds: 3), () {
       _alert.value = '';
     });
+  }
+
+  void setCheckBox(String? message) {
+    Get.defaultDialog(
+      title: '提示',
+      middleText: message ?? '無訊息',
+      confirm: TextButton(
+        onPressed: () {
+          Get.back();
+        },
+        child: Text('確認'),
+      ),
+    );
   }
 
   void set_resultImage(Widget? w) {
@@ -83,13 +98,13 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> upload_img() async {
+  Future<bool> upload_img() async {
     final Uri API_ENDPOINT = Uri.parse(SMILE_API);
 
     // 檢查 img 路徑
     if (isEmpty_img_path()) {
       print('img_path_isEmpty');
-      return;
+      return false;
     }
 
     // http 請求
@@ -97,11 +112,17 @@ class HomeController extends GetxController {
     var file = await http.MultipartFile.fromPath('file', _img_path.value);
     request.files.add(file); // 添加圖片
 
-    set_loading(true); // 開始轉圈圈
-
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
+        // 啥都沒有
+        if (response.headers['content-type']! == 'application/json') {
+          setCheckBox('Face not found');
+
+          return false;
+        }
+
+        // 找到臉了
         var boundary = response.headers['content-type']!
             .split('boundary=')[1]; // 取得 http body 的分界
 
@@ -158,20 +179,22 @@ class HomeController extends GetxController {
               set_alert(await part.transform(utf8.decoder).join());
 
             default:
-              set_alert('$name not suppport');
+              setCheckBox('$name not suppport');
               print('$name not suppport');
           }
         }
 
         set_alert('File uploaded successfully');
+        return true;
       } else {
-        set_alert('Failed to upload file. Status code: ${response.statusCode}');
+        //set_alert('Failed to upload file. Status code: ${response.statusCode}');
+        setCheckBox('No smile');
       }
     } catch (error) {
-      set_alert('Error uploading file: $error');
+      setCheckBox('Error uploading file: $error');
     }
 
-    set_loading(false);
+    return false;
   }
 
   @override

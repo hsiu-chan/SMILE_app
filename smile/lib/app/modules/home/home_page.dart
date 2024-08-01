@@ -36,7 +36,14 @@ class HomePage extends GetView<HomeController> {
 
       controller.set_alert('uploading to $SMILE_API');
 
-      await controller.upload_img();
+      controller.set_loading(true); // 開始轉圈圈
+
+      if (await controller.upload_img() == false) {
+        controller.set_loading(false);
+        return;
+      }
+      controller.set_loading(false); // 結束轉圈圈
+
       controller.set_alert('辨識完成');
       print('辨識完成');
 

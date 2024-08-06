@@ -11,7 +11,7 @@ class ResultRoutes {
   static final routes = [
     GetPage(
       name: result,
-      page: () => const ResultPage(),
+      page: () => ResultPage(),
       binding: ResultBinding(),
     ),
   ];

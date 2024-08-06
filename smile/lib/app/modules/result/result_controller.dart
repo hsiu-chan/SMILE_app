@@ -1,14 +1,16 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smile/app/core/widgets/main_frame.dart';
+import 'package:smile/app/core/widgets/smile.dart';
 
 class ResultController extends GetxController
     with GetSingleTickerProviderStateMixin {
   RxString _rt_img_path = ''.obs;
   String get rt_img_path => _rt_img_path.value;
-  dynamic smile_info;
+  late SmileInfo smile_info;
 
   List<Widget> smile_data = [];
 
@@ -25,7 +27,7 @@ class ResultController extends GetxController
     animationController.forward(from: 0.0);
   }
 
-  void build_smile_data() {
+  /*void build_smile_data() {
     // most_posterior_maxillary_teeth
     Widget most_posterior_maxillary_teeth = build_a_bar(
         smile_info['most_posterior_maxillary_teeth'],
@@ -44,7 +46,7 @@ class ResultController extends GetxController
 
     update();
   }
-
+*/
   Widget build_a_bar(int value, int maxValue, String title) {
     //var maxWidth = Get.width * 0.8;
 
@@ -87,17 +89,14 @@ class ResultController extends GetxController
         ));
   }
 
-  /*
-        */
-
   @override
   void onInit() {
     super.onInit();
     _rt_img_path.value = Get.arguments['img'];
-    smile_info = Get.arguments['smile_info'];
+    smile_info = SmileInfo.fromJson(Get.arguments['smile_info']);
 
     _setupAnimation();
-    build_smile_data();
+    //build_smile_data();
   }
 
   @override

@@ -11,11 +11,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-import 'package:smile/app/core/widgets/smile.dart';
 
 import 'package:smile/config.dart';
 
-class HomeController extends GetxController {
+class HomeController_mt extends GetxController {
   RxString _img_path = ''.obs;
   String get img_path => _img_path.value;
 
@@ -31,7 +30,7 @@ class HomeController extends GetxController {
   RxBool _loading = false.obs;
   bool get loading => _loading.value;
 
-  late Map<String, dynamic> smileInfo_json;
+  dynamic smile_info;
 
   void set_alert(String? a) {
     return;
@@ -116,12 +115,76 @@ class HomeController extends GetxController {
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
-        var responseBody = await response.stream.bytesToString();
-        smileInfo_json = jsonDecode(responseBody);
-        //return false;
+        // 啥都沒有
+        if (response.headers['content-type']! == 'application/json') {
+          setCheckBox('Face not found');
 
-        // TODO: 解析 JSON
-        //smileInfo_json = jsonResponse;
+          return false;
+        }
+
+        // 找到臉了
+        var boundary = response.headers['content-type']!
+            .split('boundary=')[1]; // 取得 http body 的分界
+
+        var parts = MimeMultipartTransformer(boundary)
+            .bind(response.stream); //分出每一 part
+
+        await for (var part in parts) {
+          // 解析 contentDisposition
+          var contentDisposition = part.headers['content-disposition'] ?? '';
+          List<String> dispositions = contentDisposition.split(';');
+
+          // 取得 multi 的 name=
+          String name = '';
+          for (var disposition in dispositions) {
+            disposition = disposition.trim();
+            if (disposition.startsWith('name=')) {
+              name =
+                  disposition.substring('name='.length + 1).replaceAll('"', '');
+            }
+          }
+
+          // contentType
+          var contentType = part.headers['content-type'] ?? '';
+
+          // 根據 name 處理 multipart
+          switch (name) {
+            // 微笑照片
+            case 'image':
+              // bit  資料
+              var _data = await part.fold<List<int>>(
+                  [], (prev, element) => prev..addAll(element));
+
+              // 取得臨時目錄
+              Directory tempDir = await getTemporaryDirectory();
+              String tempPath = tempDir.path;
+
+              // // 構建圖片路徑
+              String _ext = contentType.split('/')[1];
+              _rt_img_path.value =
+                  '$tempPath/${DateTime.now().millisecondsSinceEpoch}.$_ext';
+
+              // 寫入圖片
+              await File(rt_img_path).writeAsBytes(_data);
+
+            case 'info':
+              assert(contentType.contains('application/json'));
+              // JSON -> string
+              var jsonString = await part.transform(utf8.decoder).join();
+              // 解析JSON
+              smile_info = json.decode(jsonString);
+              print(smile_info);
+
+            case 'error':
+              set_alert(await part.transform(utf8.decoder).join());
+
+            default:
+              setCheckBox('$name not suppport');
+              print('$name not suppport');
+          }
+        }
+
+        set_alert('File uploaded successfully');
         return true;
       } else {
         //set_alert('Failed to upload file. Status code: ${response.statusCode}');

@@ -47,9 +47,9 @@ class HomePage extends GetView<HomeController> {
       controller.set_alert('辨識完成');
       print('辨識完成');
 
-      Get.to(ResultPage(), arguments: {
-        'img': controller.rt_img_path,
-        'smile_info': controller.smile_info
+      Get.to(() => ResultPage(), arguments: {
+        'img': controller.img_path,
+        'smile_info': controller.smileInfo_json
       });
     }
 
@@ -67,7 +67,7 @@ class HomePage extends GetView<HomeController> {
             ListTile(
               onTap: () async {
                 await Future.delayed(Duration.zero);
-                Get.to(LoginPage());
+                Get.to(() => LoginPage());
               },
               leading: Icon(
                 Icons.account_circle,

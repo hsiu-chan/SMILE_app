@@ -35,7 +35,6 @@ class ResultPage extends GetView<ResultController> {
                 'Your smile',
                 style: TextStyle(fontSize: 20),
               ),
-              //,
               SizedBox(height: 20.0),
               Container(
                   height: box_height,
@@ -51,8 +50,11 @@ class ResultPage extends GetView<ResultController> {
                     style: TextStyle(fontSize: 20),
                   )),*/
 
-              //直方圖
               SizedBox(height: 20.0),
+
+              //直方圖
+              //TODO: 最佳分數的呈現?
+              //TODO: 長度超過螢幕滾動
 
               SingleChildScrollView(
                   child: Column(
@@ -69,6 +71,9 @@ class ResultPage extends GetView<ResultController> {
   }
 }
 
+// 照片+辨識結果呈現
+// TODO: 自動對到嘴位置
+// TODO: 避免縮放拖曳到全在區域外
 class DraggableAndResizableWidget extends StatelessWidget {
   late double height;
   late double width;
@@ -87,10 +92,12 @@ class DraggableAndResizableWidget extends StatelessWidget {
           height: 200,
           child: ClipRect(
             child: GestureDetector(
+              // 點兩下復原位置
               onDoubleTap: () {
                 boxController.updateScale(1);
                 boxController.updateOffset(Offset(0, 0));
               },
+              // 拖曳縮放
               onScaleUpdate: (details) {
                 double newScale = details.scale * boxController.scale.value;
                 boxController.updateScale(newScale);
@@ -142,6 +149,7 @@ class DraggableAndResizableWidget extends StatelessWidget {
                                   height: pic_height,
                                   fit: BoxFit.cover,
                                 ),
+                                // 畫上辨識結果
                                 CustomPaint(
                                   size: Size(pic_width, pic_height),
                                   painter: SmilePainter(controller.smile_info),

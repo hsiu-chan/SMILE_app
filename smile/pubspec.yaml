@@ -22,6 +22,10 @@ dependencies:
   hive_flutter: ^1.1.0
   http_parser: ^4.0.2
   flutter_charts: ^0.5.2
+  dio: ^5.5.0+1
+  intl: ^0.18.0  # 確保使用最新版本
+  
+
 
 dev_dependencies:
   flutter_test:

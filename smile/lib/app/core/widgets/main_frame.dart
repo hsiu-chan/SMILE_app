@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smile/app/modules/setting/setting_controller.dart';
+import 'package:smile/config.dart';
 
 // 自定义的 Widget
 class MainFrame extends StatelessWidget {
@@ -13,8 +14,9 @@ class MainFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(MAINFRAME_PADDING),
         width: Get.width,
+        height: Get.height,
         child: child,
       ),
     );
@@ -51,12 +53,17 @@ class SettingBox extends StatelessWidget {
       child: Container(
         width: Get.width,
         color: Color.fromARGB(0, 255, 255, 1),
+        //color: Color.fromARGB(255, 255, 69, 2),
         child: Row(
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(5),
               child: NormalText(title),
-            )
+            ),
+            Container(
+              color: Color.fromARGB(255, 255, 69, 2),
+              child: child ?? SizedBox(height: 0),
+            ),
           ],
         ),
       ));

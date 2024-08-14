@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smile/app/core/widgets/main_frame.dart';
+import 'package:smile/app/modules/history/history_page.dart';
 import 'package:smile/app/modules/login/login_page.dart';
 import 'package:smile/app/modules/result/result_page.dart';
 import 'package:smile/config.dart';
@@ -17,7 +18,7 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     Get.put(HomeController());
 
-    dynamic nowState = SizedBox.shrink();
+    //dynamic nowState = SizedBox.shrink();
 
     Future<void> _pickImage() async {
       controller.clear_img();
@@ -25,7 +26,7 @@ class HomePage extends GetView<HomeController> {
       if (controller.isEmpty_img_path()) {
         return;
       }
-      nowState = Text("請確認");
+      //nowState = Text("請確認");
     }
 
     Future<void> _sendImage() async {
@@ -40,6 +41,7 @@ class HomePage extends GetView<HomeController> {
 
       if (await controller.upload_img() == false) {
         controller.set_loading(false);
+        controller.setCheckBox("upload fail");
         return;
       }
       controller.set_loading(false); // 結束轉圈圈
@@ -49,7 +51,7 @@ class HomePage extends GetView<HomeController> {
 
       Get.to(() => ResultPage(), arguments: {
         'img': controller.img_path,
-        'smile_info': controller.smileInfo_json
+        'smile_info': controller.smileInfo
       });
     }
 
@@ -66,14 +68,28 @@ class HomePage extends GetView<HomeController> {
             ),
             ListTile(
               onTap: () async {
+                Navigator.of(context).pop();
+
                 await Future.delayed(Duration.zero);
-                Get.to(() => LoginPage());
+
+                Get.to(() => HomePage());
               },
               leading: Icon(
-                Icons.account_circle,
+                Icons.home_filled,
                 size: 25,
               ),
-              title: NormalText('Profile'),
+              title: NormalText('Home'),
+            ),
+            ListTile(
+              onTap: () async {
+                await Future.delayed(Duration.zero);
+                Get.to(() => HistoryPage());
+              },
+              leading: Icon(
+                Icons.history,
+                size: 25,
+              ),
+              title: NormalText('History'),
             ),
             ListTile(
               leading: Icon(
@@ -121,12 +137,12 @@ class HomePage extends GetView<HomeController> {
               TextButton(
                 // 確認
                 style: ButtonStyle(
-                  fixedSize: MaterialStateProperty.all<Size>(
+                  fixedSize: WidgetStateProperty.all<Size>(
                     Size(Get.width * 0.8, 85), // 设置宽度和高度
                   ),
-                  backgroundColor: MaterialStateProperty.all<Color>(
+                  backgroundColor: WidgetStateProperty.all<Color>(
                       Color.fromRGBO(200, 200, 200, 1)),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                  shape: WidgetStateProperty.all<OutlinedBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

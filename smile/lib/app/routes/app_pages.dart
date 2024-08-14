@@ -1,3 +1,4 @@
+import 'package:smile/app/routes/history.dart';
 import 'package:smile/app/routes/login_routes.dart';
 import 'package:smile/app/routes/result_routes.dart';
 
@@ -14,6 +15,7 @@ class AppPages {
     ...HomeRoutes.routes,
     ...SettingRoutes.routes,
     ...ResultRoutes.routes,
-    ...LoginRoutes.routes
+    ...LoginRoutes.routes,
+    ...HistoryRoutes.routes
   ];
 }

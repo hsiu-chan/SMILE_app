@@ -1,19 +1,29 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:smile/app/modules/home/home_controller.dart';
+import 'package:smile/app/modules/smile/smile_info_adapter.dart';
 
-class SmileInfo {
+/*class SmileInfo {
   final List<List<double>> mouthPoints;
   final List<List<double>> toothBoxes;
   final List<String> toothClasses;
   final double h2w;
+  final int most_posterior_maxillary_teeth_visible;
+  final double arc_ratio;
+  final double buccal_corridor;
+  final double Maxillary_teeth_exposure;
+  final String path;
 
-  SmileInfo({
-    required this.mouthPoints,
-    required this.toothBoxes,
-    required this.toothClasses,
-    required this.h2w,
-  });
+  SmileInfo(
+      {required this.mouthPoints,
+      required this.toothBoxes,
+      required this.toothClasses,
+      required this.h2w,
+      required this.most_posterior_maxillary_teeth_visible,
+      required this.arc_ratio,
+      required this.buccal_corridor,
+      required this.Maxillary_teeth_exposure,
+      required this.path});
 
   factory SmileInfo.fromJson(Map<String, dynamic> json) {
     print(json['mouth'][0][1].toDouble() * 2);
@@ -32,9 +42,15 @@ class SmileInfo {
             .toList()),
         toothClasses: List<String>.from(json['tooth_cls']),
         h2w: json["image"]["height"].toDouble() /
-            json["image"]["width"].toDouble());
+            json["image"]["width"].toDouble(),
+        most_posterior_maxillary_teeth_visible:
+            json["most_posterior_maxillary_teeth_visible"],
+        arc_ratio: json["arc_ratio"].toDouble(),
+        buccal_corridor: json["buccal_corridor"].toDouble(),
+        Maxillary_teeth_exposure: json["Maxillary_teeth_exposure"].toDouble(),
+        path: json["path"]);
   }
-}
+}*/
 
 class SmilePainter extends CustomPainter {
   final SmileInfo smileInfo;

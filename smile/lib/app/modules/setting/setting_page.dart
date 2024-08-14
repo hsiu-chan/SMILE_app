@@ -55,6 +55,15 @@ class SettingPage extends GetView<SettingController> {
                   SettingBox(title: 'Font size'),
                   line,
                   SettingBox(
+                    title: "Language",
+                    child: Obx(
+                      () => NormalText(
+                          controller.languages[controller.language_ID]),
+                    ),
+                    onTap: controller.changeLanguage,
+                  ),
+                  line,
+                  SettingBox(
                     title: 'Logout',
                     onTap: controller.logout,
                   )

@@ -1,10 +1,14 @@
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:hive/hive.dart';
 import 'package:smile/app/core/helpers/HiveUtil.dart';
 
 class SettingController extends GetxController {
   RxDouble _selectedFontSize = 20.0.obs;
   double get selectedFontSize => _selectedFontSize.value;
+  RxInt _language_ID = 0.obs;
+  int get language_ID => _language_ID.value;
+  final List<String> languages = ["English", "中文"];
 
   late HiveUtil hiveUtil;
 
@@ -12,9 +16,18 @@ class SettingController extends GetxController {
     hiveUtil.userBox.delete('username');
   }
 
+  void changeLanguage() {
+    _language_ID.value += 1;
+    if (_language_ID.value == languages.length) {
+      _language_ID.value = 0;
+    }
+    hiveUtil.userBox.put('language', _language_ID.value);
+  }
+
   @override
   Future<void> onInit() async {
     hiveUtil = await HiveUtil.getInstance();
+    _language_ID.value = hiveUtil.userBox.get("language") ?? 0;
     super.onInit();
   }
 

@@ -11,9 +11,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-import 'package:smile/app/core/widgets/smile.dart';
+import 'package:smile/app/modules/smile/smile.dart';
+import 'package:smile/app/modules/smile/smile_info_adapter.dart';
 
 import 'package:smile/config.dart';
+
+import 'package:hive/hive.dart';
+import 'package:smile/app/core/helpers/HiveUtil.dart';
+import 'package:intl/intl.dart';
 
 class HomeController extends GetxController {
   RxString _img_path = ''.obs;
@@ -31,7 +36,7 @@ class HomeController extends GetxController {
   RxBool _loading = false.obs;
   bool get loading => _loading.value;
 
-  late Map<String, dynamic> smileInfo_json;
+  late SmileInfo smileInfo;
 
   void set_alert(String? a) {
     return;
@@ -86,10 +91,11 @@ class HomeController extends GetxController {
       // 获取应用程序的临时目录
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path;
+      String img_type = pickedFile.path.split('.').last;
 
       // 构建临时文件路径
       String tempFilePath =
-          '$tempPath/${DateTime.now().millisecondsSinceEpoch}.jpg';
+          '$tempPath/${DateTime.now().millisecondsSinceEpoch}.${img_type}';
 
       // 复制选择的文件到临时路径
       File(pickedFile.path).copy(tempFilePath);
@@ -113,22 +119,33 @@ class HomeController extends GetxController {
     var file = await http.MultipartFile.fromPath('file', _img_path.value);
     request.files.add(file); // 添加圖片
 
-    try {
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        var responseBody = await response.stream.bytesToString();
-        smileInfo_json = jsonDecode(responseBody);
-        //return false;
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      var responseBody = await response.stream.bytesToString();
+      Map<String, dynamic> smileInfo_json = jsonDecode(responseBody);
+      smileInfo_json["path"] = _img_path.value;
+      smileInfo = SmileInfo.fromJson(smileInfo_json);
 
-        // TODO: 解析 JSON
-        //smileInfo_json = jsonResponse;
-        return true;
-      } else {
-        //set_alert('Failed to upload file. Status code: ${response.statusCode}');
-        setCheckBox('No smile');
-      }
-    } catch (error) {
-      setCheckBox('Error uploading file: $error');
+      // 辨識結果存檔
+      /*
+      final app_dir = await getApplicationDocumentsDirectory();
+
+      final String save_path = "${app_dir.path}/${img_path.split('/').last}";
+
+      File(img_path).copy(save_path);
+      smileInfo_json["path"] = save_path;
+
+      smileInfo = SmileInfo.fromJson(smileInfo_json);
+
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
+      //await hiveUtil.smileInfoBox.put(formattedDate, smileInfo);*/
+
+      return true;
+    } else {
+      //set_alert('Failed to upload file. Status code: ${response.statusCode}');
+      setCheckBox('No smile');
     }
 
     return false;
@@ -137,6 +154,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     //_checkPermission();
   }
 

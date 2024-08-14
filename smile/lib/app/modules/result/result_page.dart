@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smile/app/core/widgets/main_frame.dart';
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:smile/app/core/widgets/smile.dart';
+import 'package:smile/app/modules/smile/smile.dart';
 import 'package:smile/app/modules/result/box_controller.dart';
 
 import 'result_controller.dart';
@@ -46,25 +46,25 @@ class ResultPage extends GetView<ResultController> {
                     ),
                   )),
 
-              Obx(() => Text(
+              /*Obx(() => Text(
                     'Your ${box_controller.offset.value} ',
                     style: TextStyle(fontSize: 20),
-                  )),
+                  )),*/
 
               //直方圖
-              /*Container(
-                width: Get.width,
-                child: Column(
-                  children: controller.smile_data,
-                ))*/
+              SizedBox(height: 20.0),
+
+              SingleChildScrollView(
+                  child: Column(
+                children: controller.smile_data,
+              ))
             ]),
       ),
 
-      floatingActionButton: FloatingActionButton(onPressed: () {
+      /*floatingActionButton: FloatingActionButton(onPressed: () {
         controller.animationController.forward(from: 0.0);
         print(controller.animation);
-      }),
-      // TODO
+      }),*/
     );
   }
 }
@@ -137,9 +137,10 @@ class DraggableAndResizableWidget extends StatelessWidget {
                             child: Stack(
                               children: <Widget>[
                                 Image.file(
-                                  File(controller.rt_img_path),
+                                  File(controller.smile_info.path),
                                   width: pic_width,
                                   height: pic_height,
+                                  fit: BoxFit.cover,
                                 ),
                                 CustomPaint(
                                   size: Size(pic_width, pic_height),

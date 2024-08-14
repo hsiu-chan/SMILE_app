@@ -19,7 +19,7 @@ class HistoryPage extends GetView<HistoryController> {
   }
 
   Future<void> _compare() async {
-    // 實現 compare 功能
+    // TODO:實現 compare 功能、頁面
     return;
   }
 

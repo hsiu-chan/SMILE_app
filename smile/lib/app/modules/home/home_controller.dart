@@ -49,13 +49,13 @@ class HomeController extends GetxController {
 
   void setCheckBox(String? message) {
     Get.defaultDialog(
-      title: '提示',
-      middleText: message ?? '無訊息',
+      title: 'Hints',
+      middleText: message ?? '--',
       confirm: TextButton(
         onPressed: () {
           Get.back();
         },
-        child: Text('確認'),
+        child: Text('Check'),
       ),
     );
   }

@@ -65,7 +65,7 @@ class LoginController extends GetxController {
         String msg = response.data["message"];
         if (msg == "success") {
           hiveUtil.userBox.put('username', username);
-          Get.to(() => SettingPage());
+          Get.back();
           username = '';
           password = '';
         } else {

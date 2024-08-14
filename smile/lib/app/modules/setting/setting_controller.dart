@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:hive/hive.dart';
 import 'package:smile/app/core/helpers/HiveUtil.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:smile/config.dart';
 
 class SettingController extends GetxController {
   RxDouble _selectedFontSize = 20.0.obs;
@@ -13,7 +16,26 @@ class SettingController extends GetxController {
   late HiveUtil hiveUtil;
 
   Future<void> logout() async {
-    hiveUtil.userBox.delete('username');
+    try {
+      //TODO: 伺服器 logout
+      /*final dioInstance = dio.Dio();
+
+      final response = await dioInstance.post(
+        LOGOUT_API,
+      );*/
+      hiveUtil.userBox.delete('username');
+    } catch (e) {
+      Get.defaultDialog(
+        title: '提示',
+        middleText: "Fail: $e",
+        confirm: TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: Text('Check'),
+        ),
+      );
+    }
   }
 
   void changeLanguage() {
@@ -22,6 +44,7 @@ class SettingController extends GetxController {
       _language_ID.value = 0;
     }
     hiveUtil.userBox.put('language', _language_ID.value);
+    //TODO: 設定所有頁面語言
   }
 
   @override

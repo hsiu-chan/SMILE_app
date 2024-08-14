@@ -113,6 +113,7 @@ class HomePage extends GetView<HomeController> {
             children: <Widget>[
               // 上傳的圖片
               GestureDetector(
+                  //TODO: 相機控制
                   onTap: _pickImage,
                   child: Container(
                     decoration: BoxDecoration(

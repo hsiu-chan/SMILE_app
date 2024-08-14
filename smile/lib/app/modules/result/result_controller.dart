@@ -15,11 +15,11 @@ class ResultController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late SmileInfo smile_info;
 
-  List<Widget> smile_data = [];
+  List<Widget> smile_data = []; //數據呈現 list builder
 
   late AnimationController animationController;
   late Animation<double> animation;
-  bool isReview = false;
+  bool isReview = false; // Review 不用存檔
 
   _setupAnimation() {
     animationController =
@@ -60,6 +60,7 @@ class ResultController extends GetxController
     update();
   }
 
+  // 結果動畫條
   Widget build_a_bar(double? value, double maxValue, String title) {
     double height = 25;
 
@@ -98,6 +99,7 @@ class ResultController extends GetxController
         ));
   }
 
+  // 辨識結果存檔
   Future<void> _saveResult() async {
     // 構建存檔位置
     final app_dir = await getApplicationDocumentsDirectory();
@@ -150,6 +152,7 @@ class ResultController extends GetxController
   void onClose() {
     animationController.dispose();
 
+    // 退出前詢問是否存檔
     if (!isReview) {
       Get.defaultDialog(
           title: 'Hints',

@@ -54,16 +54,20 @@ class ResultPage extends GetView<ResultController> {
 
               //直方圖
               //TODO: 最佳分數的呈現?
-              //TODO: 長度超過螢幕滾動
 
-              SingleChildScrollView(
+              Expanded(
+                child: SingleChildScrollView(
                   child: Column(
-                children: controller.smile_data,
-              ))
+                    children: controller.smile_data,
+                  ),
+                ),
+              ),
             ]),
       ),
 
-      /*floatingActionButton: FloatingActionButton(onPressed: () {
+      /*
+      // 重新運行直方圖動畫
+      floatingActionButton: FloatingActionButton(onPressed: () {
         controller.animationController.forward(from: 0.0);
         print(controller.animation);
       }),*/

@@ -50,7 +50,7 @@ class LoginController extends GetxController {
     try {
       // 發送 POST 請求
       final response = await dioInstance.post(
-        LOGIN_API,
+        '${hiveUtil.get("API_URL")}$LOGIN_API',
         data: formData,
         options: dio.Options(
           headers: {

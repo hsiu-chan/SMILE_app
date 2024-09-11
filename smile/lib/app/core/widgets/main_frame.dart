@@ -54,15 +54,18 @@ class SettingBox extends StatelessWidget {
         width: Get.width,
         color: Color.fromARGB(0, 255, 255, 1),
         //color: Color.fromARGB(255, 255, 69, 2),
+        //color: Color.fromARGB(255, 255, 69, 2),
         child: Row(
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(5),
               child: NormalText(title),
             ),
-            Container(
-              color: Color.fromARGB(255, 255, 69, 2),
-              child: child ?? SizedBox(height: 0),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: child ?? SizedBox(),
+              ),
             ),
           ],
         ),

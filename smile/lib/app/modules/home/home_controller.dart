@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+import 'package:smile/app/modules/setting/setting_controller.dart';
 import 'package:smile/app/modules/smile/smile.dart';
 import 'package:smile/app/modules/smile/smile_info_adapter.dart';
 
@@ -106,7 +107,9 @@ class HomeController extends GetxController {
   }
 
   Future<bool> upload_img() async {
-    final Uri API_ENDPOINT = Uri.parse(SMILE_API);
+    final SettingController setting_controller = Get.put(SettingController());
+    final Uri API_ENDPOINT =
+        Uri.parse('${setting_controller.api_url}$SMILE_API');
 
     // 檢查 img 路徑
     if (isEmpty_img_path()) {

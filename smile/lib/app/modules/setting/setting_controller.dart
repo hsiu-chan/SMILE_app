@@ -11,6 +11,9 @@ class SettingController extends GetxController {
   double get selectedFontSize => _selectedFontSize.value;
   RxInt _language_ID = 0.obs;
   int get language_ID => _language_ID.value;
+  RxString _api_url = "".obs;
+  String get api_url => _api_url.value;
+
   final List<String> languages = ["English", "中文"];
 
   late HiveUtil hiveUtil;
@@ -47,10 +50,17 @@ class SettingController extends GetxController {
     //TODO: 設定所有頁面語言
   }
 
+  void setAPI(String url) {
+    _api_url.value = url;
+
+    hiveUtil.userBox.put('API_URL', _api_url.value);
+  }
+
   @override
   Future<void> onInit() async {
     hiveUtil = await HiveUtil.getInstance();
     _language_ID.value = hiveUtil.userBox.get("language") ?? 0;
+    _api_url.value = hiveUtil.userBox.get("API_URL") ?? DEFAULT_API;
     super.onInit();
   }
 
